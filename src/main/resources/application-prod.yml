@@ -1,0 +1,71 @@
+# Продакшн конфигурация (application-prod.yml)
+# Активируется через: java -jar app.jar --spring.profiles.active=prod
+
+spring:
+  # Настройки базы данных PostgreSQL
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:librebot}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    # Пул соединений HikariCP
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # JPA для PostgreSQL
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none  # В продакшене ВСЕГДА используем миграции!
+    show-sql: false   # Не показывать SQL в логах
+    properties:
+      hibernate:
+        format_sql: false
+
+  # H2 Console отключена в продакшене
+  h2:
+    console:
+      enabled: false
+
+  # Liquibase для миграций
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+# Настройки Telegram (берем из переменных окружения)
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_USERNAME}
+
+# Настройки LibreLinkUp API
+libre:
+  api:
+    base-url: https://api-eu.libreview.io
+    version: ${LIBRE_API_VERSION:4.7.0}
+    connect-timeout: 15000
+    read-timeout: 45000
+    update-interval: ${LIBRE_UPDATE_INTERVAL:5}
+    token-cache-ttl: 168
+
+# Логирование для продакшена
+logging:
+  level:
+    root: WARN
+    com.jabes.librebot: INFO
+    org.springframework.web: WARN
+  file:
+    name: /var/log/librebot/app.log
+    max-size: 10MB
+    max-history: 30
+
+# Настройки сервера
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never      # Не показывать детали ошибок пользователям
+    include-binding-errors: never
