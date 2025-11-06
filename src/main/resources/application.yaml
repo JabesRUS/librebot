@@ -1,100 +1,14 @@
-# Настройки приложения
 spring:
-  application:
-    name: libre-telegram-bot
-
-  # Профиль по умолчанию (dev - разработка)
-  profiles:
-    active: dev
-
-  # Настройки базы данных
   datasource:
-    # Используем H2 для разработки
-    url: jdbc:h2:mem:librebot
+    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
 
-  # JPA / Hibernate настройки
   jpa:
-    # Автоматически создавать/обновлять схему БД (для разработки)
-    hibernate:
-      ddl-auto: none  # none - управление через Liquibase
-    # Показывать SQL запросы в консоли
-    show-sql: true
-    # Форматировать SQL для читаемости
-    properties:
-      hibernate:
-        format_sql: true
-    # Диалект для H2
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
 
-  # Настройки Liquibase
   liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.yaml
-
-  # H2 Console для просмотра БД (только для разработки!)
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-  # Кеширование
-  cache:
-    type: simple  # Простое in-memory кеширование
-    cache-names:
-      - libreTokens  # Кеш для JWT токенов LibreLinkUp
-      - glucoseData  # Кеш для данных глюкозы
-
-# Настройки Telegram бота
-telegram:
-  bot:
-    # ВАЖНО: Замените на ваш токен от @BotFather
-    token: ${TELEGRAM_BOT_TOKEN:8533845773:AAFAYtpN1ieM_7PCza7O9j3vsKaGXxqHjzE}
-    # ВАЖНО: Замените на имя вашего бота
-    username: ${TELEGRAM_BOT_USERNAME:libreview_bot}
-
-# Настройки LibreLinkUp API
-libre:
-  api:
-    # Базовый URL для Европейского региона
-    base-url: https://api-eu.libreview.io
-    # Версия приложения (может потребовать обновления)
-    version: 4.7.0
-    # Таймауты HTTP запросов (в миллисекундах)
-    connect-timeout: 10000  # 10 секунд
-    read-timeout: 30000     # 30 секунд
-    # Интервал обновления данных (в минутах)
-    update-interval: 5
-    # TTL для кеша токена (в часах)
-    token-cache-ttl: 168  # 7 дней (токен действует ~6 месяцев, но обновляем чаще)
-
-# Настройки уведомлений
-notifications:
-  # Пороговые значения по умолчанию (в mmol/L)
-  default:
-    low-threshold: 3.9    # Ниже - гипогликемия
-    high-threshold: 10.0  # Выше - гипергликемия
-  # Интервал проверки (в минутах)
-  check-interval: 5
-
-# Логирование
-logging:
-  level:
-    root: INFO
-    com.jabes.librebot: DEBUG
-    org.springframework.web: INFO
-    org.hibernate.SQL: DEBUG
-    org.telegram.telegrambots: INFO
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-  file:
-    name: logs/librebot.log
-
-# Настройки сервера
-server:
-  port: 8080
-  error:
-    include-message: always
-    include-binding-errors: always
+    enabled: false
