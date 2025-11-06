@@ -1,0 +1,311 @@
+# ==============================================================================
+# КОНФИГУРАЦИЯ ДЛЯ ПРОФИЛЯ PRODUCTION (PROD)
+# Этот файл автоматически загружается когда spring.profiles.active=prod
+# ВАЖНО: Используется для реального production окружения!
+# ==============================================================================
+
+# ==============================================================================
+# НАСТРОЙКИ СЕРВЕРА
+# ==============================================================================
+server:
+  # Порт приложения в production
+  # Можно оставить 8080 или изменить (например, 80, 443)
+  port: ${SERVER_PORT:8080}
+
+  # Настройки обработки ошибок для production
+  error:
+    # НЕ показывать stacktrace пользователям (безопасность!)
+    # never = никогда не включать stacktrace в ответ
+    include-stacktrace: never
+
+    # Показывать сообщение об ошибке
+    # always = показывать общее сообщение (без деталей)
+    include-message: always
+
+    # НЕ показывать ошибки валидации в деталях
+    include-binding-errors: never
+
+  # Настройки компрессии ответов (для экономии трафика)
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,application/json,application/javascript
+    min-response-size: 1024
+
+  # ==============================================================================
+  # ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ ДЛЯ PRODUCTION
+  # ==============================================================================
+
+  # Настройки для работы с прокси (если используется nginx, load balancer)
+  forward-headers-strategy: framework
+
+  # Настройки для graceful shutdown (корректная остановка)
+  shutdown: graceful
+
+# ==============================================================================
+# НАСТРОЙКИ PostgreSQL БАЗЫ ДАННЫХ
+# ==============================================================================
+spring:
+  # ------------------------------------------------------------------------------
+  # DATASOURCE - Подключение к PostgreSQL
+  # ------------------------------------------------------------------------------
+  datasource:
+    # URL подключения к PostgreSQL
+    # Формат: jdbc:postgresql://HOST:PORT/DATABASE_NAME
+    # Используем переменную окружения или значение по умолчанию
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/libre_bot_db}
+
+    # Драйвер PostgreSQL
+    driver-class-name: org.postgresql.Driver
+
+    # Имя пользователя БД из переменной окружения
+    # КРИТИЧНО: Никогда не храни пароли в коде!
+    username: ${DB_USERNAME:postgres}
+
+    # Пароль БД из переменной окружения
+    # КРИТИЧНО: Никогда не храни пароли в коде!
+    password: ${DB_PASSWORD}
+
+    # Настройки пула подключений HikariCP для production
+    hikari:
+      # Максимальное количество подключений в пуле
+      # Для production нужно больше, чем в dev (обычно 10-50)
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+
+      # Минимальное количество готовых подключений
+      # Держим достаточно для быстрого старта под нагрузкой
+      minimum-idle: ${DB_POOL_MIN_IDLE:10}
+
+      # Имя пула (для логов и мониторинга)
+      pool-name: PostgreSQL-Prod-Pool
+
+      # Таймаут ожидания подключения из пула (миллисекунды)
+      # 30000 мс = 30 секунд
+      # Если пул занят, запрос будет ждать максимум 30 сек
+      connection-timeout: 30000
+
+      # Таймаут простоя подключения (миллисекунды)
+      # 600000 мс = 10 минут
+      # Если подключение не используется 10 минут, оно закрывается
+      idle-timeout: 600000
+
+      # Максимальное время жизни подключения (миллисекунды)
+      # 1800000 мс = 30 минут
+      # После 30 минут подключение обновляется (предотвращает утечки)
+      max-lifetime: 1800000
+
+      # Запрос для проверки живости подключения
+      # Выполняется перед выдачей подключения из пула
+      connection-test-query: SELECT 1
+
+      # Автокоммит транзакций
+      # true = каждый запрос автоматически коммитится
+      auto-commit: true
+
+      # Настройки для устранения утечек подключений
+      leak-detection-threshold: 60000  # 60 секунд
+
+  # ------------------------------------------------------------------------------
+  # JPA / HIBERNATE НАСТРОЙКИ ДЛЯ PRODUCTION
+  # ------------------------------------------------------------------------------
+  jpa:
+    # НЕ показывать SQL запросы в логах (производительность + безопасность)
+    show-sql: false
+
+    # Настройки Hibernate
+    hibernate:
+      # Стратегия управления схемой БД для production
+      # validate = только проверяет соответствие Entity и схемы БД
+      # НЕ создаёт и НЕ изменяет таблицы автоматически!
+      # Все изменения через Liquibase миграции
+      ddl-auto: validate
+
+      # Стратегия именования таблиц и колонок
+      naming:
+        # Стратегия физического именования (как в БД)
+        # SpringPhysicalNamingStrategy: camelCase -> snake_case
+        # Например: firstName -> first_name
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+    # Дополнительные properties Hibernate для production
+    properties:
+      hibernate:
+        # Диалект PostgreSQL
+        # Hibernate оптимизирует запросы под PostgreSQL
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+        # НЕ форматировать SQL (экономия ресурсов)
+        format_sql: false
+
+        # НЕ показывать комментарии в SQL
+        use_sql_comments: false
+
+        # НЕ собирать статистику (экономия ресурсов)
+        generate_statistics: false
+
+        # Размер JDBC batch для массовых операций
+        jdbc:
+          batch_size: 20
+          # Версионирование batch операций
+          batch_versioned_data: true
+
+        # Настройки кеша запросов
+        query:
+          # Включить кеш запросов
+          plan_cache_max_size: 2048
+
+        # Порядок операций при insert
+        order_inserts: true
+        order_updates: true
+
+        # Использовать новые генераторы ID
+        id:
+          new_generator_mappings: true
+
+  # ------------------------------------------------------------------------------
+  # LIQUIBASE ДЛЯ PRODUCTION
+  # ------------------------------------------------------------------------------
+  liquibase:
+    # Включить Liquibase (обязательно для production!)
+    enabled: true
+
+    # Путь к главному changelog файлу
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+    # Контекст для production миграций
+    # Можно создавать миграции только для prod
+    contexts: prod
+
+    # НЕ удалять данные при старте (критично!)
+    drop-first: false
+
+    # Схема БД для таблиц Liquibase
+    default-schema: public
+
+    # Таблица для истории миграций Liquibase
+    database-change-log-table: databasechangelog
+    database-change-log-lock-table: databasechangeloglock
+
+    # ==============================================================================
+    # ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ ДЛЯ PRODUCTION
+    # ==============================================================================
+
+    # Настройки Jackson (JSON serialization)
+  jackson:
+    # Сериализация дат в ISO-8601 формате
+    serialization:
+      write-dates-as-timestamps: false
+
+    # Не включать null значения в JSON (экономия трафика)
+    default-property-inclusion: non_null
+
+    # Временная зона для дат
+    time-zone: UTC
+
+    # Время для graceful shutdown
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+# ==============================================================================
+# ЛОГИРОВАНИЕ ДЛЯ PRODUCTION (МИНИМАЛЬНОЕ)
+# ==============================================================================
+logging:
+  level:
+    # Корневой уровень - только ошибки и предупреждения
+    root: WARN
+
+    # Логи для твоего приложения
+    # INFO = только важные события (старт, успешные операции)
+    # НЕ используем DEBUG/TRACE в production!
+    com.jabes.librebot: INFO
+
+    # Логи Hibernate SQL
+    # WARN = только проблемы с SQL
+    # НЕ показываем каждый SQL запрос!
+    org.hibernate.SQL: WARN
+
+    # НЕ логируем параметры SQL (безопасность!)
+    org.hibernate.type.descriptor.sql: WARN
+
+    # Логи транзакций - только ошибки
+    org.hibernate.engine.transaction: ERROR
+
+    # Логи Spring Framework
+    org.springframework: INFO
+
+    # Логи Spring Boot
+    org.springframework.boot: INFO
+
+    # Логи Spring Web - только предупреждения
+    org.springframework.web: WARN
+
+    # Логи HikariCP - информация о пуле
+    com.zaxxer.hikari: INFO
+
+    # Логи Liquibase - показывать применяемые миграции
+    liquibase: INFO
+
+    # Логи Telegram Bot API
+    # INFO = основные события (отправка/получение сообщений)
+    org.telegram.telegrambots: INFO
+
+  # Паттерн вывода логов (без цветов, для файлов)
+  pattern:
+    # Формат для production (без цветов)
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%level] [%thread] %logger{36} : %msg%n"
+
+  # Настройки файлов логов (опционально)
+  file:
+    # Имя файла лога
+    name: ${LOG_FILE:logs/libre-bot.log}
+
+    # Максимальный размер файла лога
+    max-size: 10MB
+
+    # Количество файлов для ротации
+    max-history: 30
+
+# ==============================================================================
+# НАСТРОЙКИ ACTUATOR ДЛЯ PRODUCTION (ОГРАНИЧЕННЫЕ)
+# ==============================================================================
+management:
+  endpoints:
+    web:
+      # Базовый путь к endpoints
+      base-path: /actuator
+
+      # Какие endpoints доступны
+      exposure:
+        # ТОЛЬКО health и info для production!
+        # НЕ открываем env, metrics, mappings и другие (безопасность!)
+        include: health,info
+
+  # Настройки health endpoint
+  endpoint:
+    health:
+      # Показывать детали здоровья
+      # when-authorized = только авторизованным пользователям
+      # never = никому не показывать детали (самое безопасное)
+      show-details: when-authorized
+
+      # Компоненты для проверки здоровья
+      show-components: when-authorized
+
+  # Информация о приложении (доступна через /actuator/info)
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+# ==============================================================================
+# НАСТРОЙКИ КЕШИРОВАНИЯ (переопределение из application.yml если нужно)
+# ==============================================================================
+# spring:
+#   cache:
+#     caffeine:
+#       spec: maximumSize=500,expireAfterWrite=180d
+
+
+
