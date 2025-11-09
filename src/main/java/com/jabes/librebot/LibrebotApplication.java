@@ -2,8 +2,10 @@ package com.jabes.librebot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@EnableJpaAuditing //  включает механизм автоматического заполнения временных меток в Spring
 public class LibrebotApplication {
 
     /**
