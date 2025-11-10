@@ -125,9 +125,15 @@ telegram:
 # НАСТРОЙКИ LibreView API
 # ==============================================================================
 libreview:
+  credentials:
+    email: ${LIBREVIEW_EMAIL:}    # Пустое значение по умолчанию
+    password: ${LIBREVIEW_PASSWORD:}
+
   api:
     # Базовый URL для LibreView API
     base-url: https://api.libreview.ru
+    connection-timeout: 5000      # миллисекунды (5 секунд)
+    read-timeout: 10000           # миллисекунды (10 секунд)
 
     # Эндпоинты API
     endpoints:
@@ -147,6 +153,9 @@ libreview:
       version: 4.16.0
       accept: application/json
       content-type: application/json
+      x-app-platform: Android
+      x-app-version: 2.12.0
+      x-app-name: librelink
 
 # ==============================================================================
 # НАСТРОЙКИ МОНИТОРИНГА ГЛЮКОЗЫ
