@@ -34,10 +34,10 @@ public class LibreViewConfig {
         private String product;
         private String version;
         private String accept;
-        private String contentType;
         private String xAppPlatform;
         private String xAppVersion;
         private String xAppName;
+        private String accountId;
     }
 
     @Setter @Getter

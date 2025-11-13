@@ -156,6 +156,7 @@ libreview:
       x-app-platform: Android
       x-app-version: 2.12.0
       x-app-name: librelink
+      account-Id: 583af0d8f13aec296c3e3e62442a994e5f1235cd50e64a6b848f198f93ee909f
 
 # ==============================================================================
 # НАСТРОЙКИ МОНИТОРИНГА ГЛЮКОЗЫ

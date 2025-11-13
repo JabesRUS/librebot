@@ -175,6 +175,10 @@ logging:
     # DEBUG = показывать детали работы с Telegram API
     org.telegram.telegrambots: DEBUG
 
+    org.springframework.web.reactive.function.client: TRACE
+    reactor.netty.http.client: TRACE
+    org.springframework.http.codec: TRACE
+
   # Паттерн вывода логов (можно переопределить из application.yml)
   pattern:
     # Добавляем цвета для консоли (работает в большинстве терминалов)

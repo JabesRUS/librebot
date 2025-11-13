@@ -7,15 +7,20 @@ import com.jabes.librebot.model.dto.libreview.LibreViewLoginRequest;
 import com.jabes.librebot.model.dto.libreview.LibreViewLoginResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.time.Instant;
 
 @Service
 @Slf4j  // Lombok создаст поле: private static final Logger log
 @RequiredArgsConstructor
 public class LibreViewAuthService {
 
+    @Qualifier("libreViewWebClient")
     private final WebClient webClient;
     private final LibreViewConfig config;
 
@@ -87,6 +92,7 @@ public class LibreViewAuthService {
             LibreViewLoginResponse response = webClient
                     .post()
                     .uri("/llu/auth/login")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/json")
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(LibreViewLoginResponse.class)
@@ -123,6 +129,23 @@ public class LibreViewAuthService {
             log.error("Неожиданная ошибка при авторизации", e);
             throw new LibreViewAuthException("Не удалось выполнить авторизацию: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     *
+     * @param newToken
+     */
+    public void updateToken(LibreViewAuthTicket newToken) {
+
+        if (newToken == null || newToken.getToken() == null || newToken.getExpires() == null) {
+            throw new LibreViewAuthException("Отсутствует токен или его срок действия.");
+        }
+
+        this.cachedToken = newToken.getToken();
+        this.tokenExpires = newToken.getExpires();
+
+        log.debug("Токен обновлен, действителен до: {}",
+                Instant.ofEpochSecond(newToken.getExpires()));
     }
 
     /**
