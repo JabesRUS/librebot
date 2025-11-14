@@ -91,7 +91,10 @@ public class LibreViewApiService {
 
 
     /**
+     * Получает список всех подключений (устройств) пользователя из LibreView.
      *
+     * @return список подключений LibreView (не может быть пустым)
+     * @throws LibreViewApiException если запрос не удался или список подключений пустой
      */
     public List<LibreViewConnection> getConnections() {
         String validToken = authService.getValidToken();

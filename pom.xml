@@ -17,7 +17,6 @@
 	<properties>
 		<java.version>17</java.version>
         <!-- Версии библиотек -->
-        <telegrambots.version>6.9.7.1</telegrambots.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -55,11 +54,19 @@
         <!-- Telegram Bot API -->
 
         <!-- TelegramBots - основная библиотека для работы с Telegram -->
+        <!-- https://mvnrepository.com/artifact/org.telegram/telegrambots-springboot-longpolling-starter -->
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambots-spring-boot-starter</artifactId>
-            <version>${telegrambots.version}</version>
+            <artifactId>telegrambots-springboot-longpolling-starter</artifactId>
+            <version>9.2.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.telegram/telegrambots-client -->
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-client</artifactId>
+            <version>9.2.0</version>
+        </dependency>
+
 
 		<dependency>
 			<groupId>org.postgresql</groupId>

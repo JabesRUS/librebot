@@ -115,11 +115,14 @@ telegram:
     # ВАЖНО: В production используй переменную окружения!
     # Формат: ${ПЕРЕМЕННАЯ:значение_по_умолчанию}
     # Если переменная TELEGRAM_BOT_TOKEN не задана, использует значение после ':'
-    token: ${TELEGRAM_BOT_TOKEN:8339753624:AAHrV8c9dQMzKiCjsHNn8Q8q7afoETmGEPo}
+    token: ${TELEGRAM_BOT_TOKEN:}
 
     # Имя бота (username без @)
     # Например: FreestyleLibreBot
-    username: ${TELEGRAM_BOT_USERNAME:testlibre3_bot}
+    username: ${TELEGRAM_BOT_USERNAME:}
+
+    # отображаемое имя (опционально, для логов)
+    name: "Libre Glucose Monitor"
 
 # ==============================================================================
 # НАСТРОЙКИ LibreView API
@@ -195,7 +198,8 @@ logging:
     com.jabes.librebot: DEBUG
 
     # Уровень для Telegram Bots API
-    org.telegram.telegrambots: INFO
+    org.telegram.telegrambots: DEBUG
+
 
   # Паттерн вывода логов в консоль
   pattern:
