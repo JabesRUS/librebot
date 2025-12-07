@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="202512060001" author="jabes">
+        <comment>Добавление связи glucose_readings -> users</comment>
+
+        <!-- Добавляем колонку user_id -->
+        <addColumn tableName="glucose_readings">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Добавляем Foreign Key -->
+        <addForeignKeyConstraint
+                baseTableName="glucose_readings"
+                baseColumnNames="user_id"
+                constraintName="fk_glucose_readings_user"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+        <!-- Индекс для ускорения поиска по user_id -->
+        <createIndex tableName="glucose_readings" indexName="idx_glucose_readings_user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>
