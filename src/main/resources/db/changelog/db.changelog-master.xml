@@ -8,5 +8,6 @@
     <include file="db/changelog/changes/001-create-users-table.xml"/>
     <include file="db/changelog/changes/002-create-glucose-readings-table.xml"/>
     <include file="db/changelog/changes/003-create-notification-settings-table.xml"/>
+    <include file="db/changelog/changes/004-add-user-id-to-glucose-readings.xml"/>
 
 </databaseChangeLog>

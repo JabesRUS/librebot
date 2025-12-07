@@ -12,9 +12,9 @@
                 <constraints primaryKey="true" primaryKeyName="glucose_readings_id_pk"/>
             </column>
 
-            <column name="user_id" type="BIGINT">
+<!--            <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
-            </column>
+            </column>-->
 
             <column name="glucose_value" type="DECIMAL(5,2)">
                 <constraints nullable="false"/>
@@ -45,13 +45,13 @@
         onDelete="действие_при_удалении"/>
 
         -->
-        <addForeignKeyConstraint
+<!--        <addForeignKeyConstraint
                 baseTableName="glucose_readings"
                 baseColumnNames="user_id"
                 constraintName="fk_glucose_readings_user"
                 referencedTableName="users"
                 referencedColumnNames="id"
-                onDelete="CASCADE"/>
+                onDelete="CASCADE"/>-->
 
     </changeSet>
 </databaseChangeLog>

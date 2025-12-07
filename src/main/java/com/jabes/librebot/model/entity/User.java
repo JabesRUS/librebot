@@ -37,21 +37,6 @@ public class User {
     @Column(name = "chat_id", nullable = false, unique = true)
     private Long chatId;
 
-    @Column(name = "libre_mail", unique = true)
-    private String libreMail;
-
-    @Column(name = "libre_password")
-    private String librePassword;
-
-    @Column(name = "libre_token")
-    private String libreToken;
-
-    @Column(name = "token_expiry")
-    private LocalDateTime tokenExpiry;
-
-    @Column(name = "patient_id")
-    private String patientId;
-
     @Column(name = "created_at", nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;

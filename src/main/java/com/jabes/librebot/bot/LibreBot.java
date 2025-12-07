@@ -1,7 +1,10 @@
 package com.jabes.librebot.bot;
 
+import com.jabes.librebot.bot.Utils.BotMessages;
+import com.jabes.librebot.bot.command.UserCommand;
 import com.jabes.librebot.bot.common.CommonInfo;
 import com.jabes.librebot.bot.config.BotConfig;
+import com.jabes.librebot.bot.routers.CommandRouter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,7 @@ public class LibreBot implements SpringLongPollingBot, LongPollingSingleThreadUp
 
     private final TelegramClient telegramClient;
     private final BotConfig botConfig;
+    private final CommandRouter commandRouter;
 
     // Метод регистрации - возвращает токен
     @Override
@@ -47,15 +51,10 @@ public class LibreBot implements SpringLongPollingBot, LongPollingSingleThreadUp
             if (message.hasText()) {
 
                 if (message.isCommand()) { // Возвращает true, если сообщение - команда
-                    String commandName = message.getText().substring(1);
+                    String commandName = message.getText().toLowerCase().trim();
 
-                    switch (commandName) {
-                        case START -> sendMessage(BotMessages.WELCOME, commonInfo);
+                    handleCommand(commandName, commonInfo);
 
-                        case HELP -> sendMessage(BotMessages.HELP, commonInfo);
-
-                        default -> sendMessage(BotMessages.UNKNOWN_COMMAND, commonInfo);
-                    }
                 } else {
                     Long chatId = commonInfo.getChatId();
                     Long userId = commonInfo.getUserId();
@@ -115,5 +114,31 @@ public class LibreBot implements SpringLongPollingBot, LongPollingSingleThreadUp
                 .messageText(message.getText())
                 .build();
 
+    }
+
+    private void handleCommand(String userCommand, CommonInfo commonInfo) {
+        UserCommand commandName = UserCommand.fromString(userCommand);
+
+        commandRouter.getCommand(commandName)
+                .ifPresentOrElse(command -> {
+                    log.info("Начинается выполнение команды - {}.", commandName.getCommandName());
+                    command.execute(commonInfo);
+                    log.info("Команда {} успешно выполнена!", commandName.getCommandName());
+                    },
+                        () -> handlerUnknownCommand(commonInfo.getChatId()));
+    }
+
+    private void handlerUnknownCommand(long chatId) {
+        // неизвестная команда(сообщение)
+        SendMessage message = SendMessage.builder()
+                .chatId(chatId)
+                .text("Неизвестная команда. Начните с команды \"/start\"")
+                .build();
+
+        try {
+            telegramClient.execute(message);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

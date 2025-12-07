@@ -13,6 +13,17 @@ import java.util.Optional;
 
 @Repository
 public interface GlucoseReadingRepository extends JpaRepository<GlucoseReading, Long> {
+    boolean existsByCreatedAt(LocalDateTime createdAt);
+
+    boolean existsByTimestamp(LocalDateTime timestamp);
+
+    /**
+     * Проверить существование показания для пользователя по timestamp
+     * @param user - пользователь
+     * @param timestamp - время измерения
+     * @return true если показание уже существует
+     */
+    boolean existsByUserAndTimestamp(User user, LocalDateTime timestamp);
 
     /**
      * Найти показания пользователя (с пагинацией)
@@ -29,7 +40,6 @@ public interface GlucoseReadingRepository extends JpaRepository<GlucoseReading, 
      * @return страница с показаниями, отсортированными по убыванию даты
      */
     Page<GlucoseReading> findByUserOrderByTimestampDesc(User user, Pageable pageable);
-
 
     /**
      * Получить последнее показание глюкозы для пользователя

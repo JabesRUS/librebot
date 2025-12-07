@@ -145,6 +145,10 @@ public class LibreViewApiService {
 
     }
 
+    public String getPatientId() {
+        return getConnections().get(0).getPatientId();
+    }
+
     private void checkAndSaveToken(LibreViewAuthTicket ticket, String validToken) {
         if (ticket != null) {
             String newToken = ticket.getToken();

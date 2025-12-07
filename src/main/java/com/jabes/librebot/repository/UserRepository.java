@@ -30,14 +30,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email - email для входа в LibreView
      * @return пользователь или Optional.empty()
      */
-    Optional<User> findByLibreMail(String email);
+    //Optional<User> findByLibreMail(String email);
 
     /**
      * Получить пользователей с активным токеном (с пагинацией)
      * @param pageable - параметры пагинации
      * @return страница с пользователями
      */
-    Page<User> findAllByLibreTokenIsNotNull(Pageable pageable);
+    //Page<User> findAllByLibreTokenIsNotNull(Pageable pageable);
 
 
 }
